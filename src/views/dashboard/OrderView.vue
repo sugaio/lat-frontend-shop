@@ -42,7 +42,7 @@ onMounted( async() => {
                 <tr v-for="order in orders" :key="order.id">
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ order.invoice }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ order.name }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ order.status }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ order.Status }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ order.grand_total }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <router-link :to="{ name: 'detail_order', params: { snap_token: order.snap_token } }"
