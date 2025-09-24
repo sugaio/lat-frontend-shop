@@ -3,41 +3,36 @@ import CustomerMenu from '@/components/CustomerMenu.vue';
 import { moneyFormat } from '@/helper/useFormatter';
 import { useOrderStore } from '@/stores/order';
 import { onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 
 const { getDetailOrder } = useOrderStore();
 const detailOrder = ref({});
 
-const route = useRoute();
-const router = useRouter();
-
-const payment = (snapToken) => {
-    window.snap.pay(snapToken, {
-      onSuccess: function (result) {
-        console.log("Success: ", result);
-        router.push({ name: 'detail_order', params: { snap_token: snapToken } })
-      },
-      onPending: function (result) {
-        console.log("Pending: ", result);
-        router.push({ name: 'detail_order', params: { snap_token: snapToken } })
-      },
-      onError: function (result) {
-        console.log("Error: ", result);
-        router.push({ name: 'detail_order', params: { snap_token: snapToken } })
-      },
-      onClose: function () {
-        router.push({ name: 'detail_order', params: { snap_token: snapToken } })
-      },
-  })
-}
-
-
+const route = useRoute()
 
 onMounted(async () => {
   const snap_token = route.params.snap_token;
   detailOrder.value = await getDetailOrder(snap_token);
 })
 
+const router = useRoute();
+
+const payment = (snapToken) => {
+  window.snap.pay(snapToken, {
+    onSuccess: function (result) {
+      console.log("Success: ", result);
+      router.push({ name: 'detail_order', params: { snap_token: snapToken } })
+    },
+    onPending: function (result) {
+      console.log("Pending: ", result);
+      router.push({ name: 'detail_order', params: { snap_token: snapToken } })
+    },
+    onError: function (result) {
+      console.log("Error: ", result);
+      router.push({ name: 'detail_order', params: { snap_token: snapToken } })
+    }
+  })
+}
 </script>
 
 <template>
@@ -86,7 +81,7 @@ onMounted(async () => {
                   </td>
                   <td class="w-1 py-2">:</td>
                   <td class="py-2">
-                    {{ detailOrder.courier }} / {{ detailOrder.service }} / {{ moneyFormat(detailOrder.cost_courier)  }}
+                    {{ detailOrder.courier }} / {{ detailOrder.service }} / {{ moneyFormat(detailOrder.cost_courier) }}
                   </td>
                 </tr>
                 <tr>
@@ -104,7 +99,7 @@ onMounted(async () => {
                   </td>
                   <td class="w-1 py-2">:</td>
                   <td class="py-2">
-                    {{moneyFormat(detailOrder.grand_total) }}
+                    {{ moneyFormat(detailOrder.grand_total) }}
                   </td>
                 </tr>
                 <tr>
@@ -113,15 +108,18 @@ onMounted(async () => {
                   </td>
                   <td class="w-1 py-2">:</td>
                   <td class="py-2">
-                    <button v-if="detailOrder.Status == 'Pending'" @click.prevent="payment(detailOrder.snap_token)" class="bg-gray-500 hover:bg-gray-600 font-semibold py-2 px-4 rounded-full">BAYAR
+                    <button v-if="detailOrder.status == 'Pending'" @click.prevent="payment(detailOrder.snap_token)"
+                      class="bg-gray-500 hover:bg-gray-600 font-semibold py-2 px-4 rounded-full">BAYAR
                       SEKARANG</button>
-                    <button v-else-if="detailOrder.Status == 'Success'" class="bg-green-500 hover:bg-green-600 text-gray-400 font-semibold py-2 px-4 rounded-full">
-                      {{ detailOrder.Status }}</button>
-                    <button v-else-if="detailOrder.Status == 'Expired'"
+                    <button v-else-if="detailOrder.status == 'Success'"
+                      class="bg-green-500 hover:bg-green-600 text-gray-400 font-semibold py-2 px-4 rounded-full">
+                      {{ detailOrder.status }}</button>
+                    <button v-else-if="detailOrder.status == 'Expired'"
                       class="bg-yellow-500 hover:bg-yellow-600 text-gray-400 font-semibold py-2 px-4 rounded-full">
-                      {{ detailOrder.Status }}</button>
-                    <button v-else-if="detailOrder.Status == 'Failed'" class="bg-red-500 hover:bg-red-600 text-gray-400 font-semibold py-2 px-4 rounded-full">
-                      {{ detailOrder.Status }}</button>
+                      {{ detailOrder.status }}</button>
+                    <button v-else-if="detailOrder.status == 'Failed'"
+                      class="bg-red-500 hover:bg-red-600 text-gray-400 font-semibold py-2 px-4 rounded-full">
+                      {{ detailOrder.status }}</button>
                   </td>
                 </tr>
               </tbody>
@@ -135,7 +133,8 @@ onMounted(async () => {
             <hr class="my-4 border-gray-200">
             <table class="w-full">
               <tbody>
-                <tr v-for="product in detailOrder.orders" :key="product.id" class="bg-gray-100 border-b border-gray-200">
+                <tr v-for="product in detailOrder.orders" :key="product.id"
+                  class="bg-gray-100 border-b border-gray-200">
                   <td class="p-4" width="25%">
                     <div class="w-24 h-24">
                       <img :src="product.image" class="w-full h-full object-cover rounded-lg">
@@ -154,7 +153,7 @@ onMounted(async () => {
                     </table>
                   </td>
                   <td class="p-4 text-right">
-                    <p class="m-0 font-bold">{{moneyFormat(product.price)}}</p>
+                    <p class="m-0 font-bold">{{ moneyFormat(product.price) }}</p>
                   </td>
                 </tr>
               </tbody>
